@@ -8,7 +8,6 @@
  */
 
 import java.awt.image.BufferedImage;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -52,13 +51,13 @@ public class SVDComp {
         
         for (int i = 0; i < width; i++) 
         	for (int j = 0; j < height; j++) {
-        		rImgMat[i][j] = imgMatrix[i][j] & 0x00FF0000;
-        		gImgMat[i][j] = imgMatrix[i][j] & 0x0000FF00;
-        		bImgMat[i][j] = imgMatrix[i][j] & 0x000000FF;
+        		rImgMat[i][j] = imgMatrix[i][j] & 0xFF;
+        		gImgMat[i][j] = (imgMatrix[i][j] >> 8) & 0xFF;
+        		bImgMat[i][j] = (imgMatrix[i][j] >> 16) & 0xFF;
         	}
         
         // compress
-        int k = 20;
+        int k = 100;
         double[][] r = compress(rImgMat, k);
         double[][] g = compress(gImgMat, k);
         double[][] b = compress(bImgMat, k);
@@ -67,12 +66,14 @@ public class SVDComp {
         BufferedImage finalImg = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         
         // create image bit-by-bit
-        for (int i = 0; i < width; i++)
-        	for (int j = 0; j < height; j++)
-        		finalImg.setRGB(i, j, 0xFF000000 + (int)(r[i][j] + g[i][j] + b[i][j]));
+        for (int i = 0; i < width; i++) {
+        	for (int j = 0; j < height; j++) {
+        		finalImg.setRGB(i, j, (int)r[i][j] + ((int)g[i][j] << 8) + ((int)b[i][j] << 16));
+        	}
+        }
         
         
-        File outFile = new File("./resources/outFile.jpg");
+        File outFile = new File("./resources/test6.jpg");
         try {
 			boolean T = ImageIO.write(finalImg, "jpg", outFile);
 			System.out.println(T);
