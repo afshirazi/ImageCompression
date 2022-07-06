@@ -39,7 +39,7 @@ public class SVDComp {
         		imgMatrix[i][j] = img.getRGB(i, j);
         
         // debug printing
-        printImg(imgMatrix);
+        //printImg(imgMatrix);
 	}
 	
 	public static void printImg(int[][] img) {
