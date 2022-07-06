@@ -8,7 +8,9 @@
  */
 
 import java.awt.image.BufferedImage;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
@@ -32,22 +34,24 @@ public class SVDComp {
             System.out.println(e);
         }
         
+        int width = img.getWidth();
+        int height = img.getHeight();
         
         // matrix to store rgb values of the input image
-        int[][] imgMatrix = new int[img.getWidth()][img.getHeight()];
+        int[][] imgMatrix = new int[width][height];
         
         // filling the matrix
-        for (int i = 0; i < img.getWidth(); i++) 
-        	for (int j = 0; j < img.getHeight(); j++)
+        for (int i = 0; i < width; i++) 
+        	for (int j = 0; j < height; j++)
         		imgMatrix[i][j] = img.getRGB(i, j);
         
         // splitting the matrix into separate red, green and blue matrices
-        double[][] rImgMat = new double[img.getWidth()][img.getHeight()];
-        double[][] gImgMat = new double[img.getWidth()][img.getHeight()];
-        double[][] bImgMat = new double[img.getWidth()][img.getHeight()];
+        double[][] rImgMat = new double[width][height];
+        double[][] gImgMat = new double[width][height];
+        double[][] bImgMat = new double[width][height];
         
-        for (int i = 0; i < img.getWidth(); i++) 
-        	for (int j = 0; j < img.getHeight(); j++) {
+        for (int i = 0; i < width; i++) 
+        	for (int j = 0; j < height; j++) {
         		rImgMat[i][j] = imgMatrix[i][j] & 0x00FF0000;
         		gImgMat[i][j] = imgMatrix[i][j] & 0x0000FF00;
         		bImgMat[i][j] = imgMatrix[i][j] & 0x000000FF;
@@ -55,17 +59,32 @@ public class SVDComp {
         
         // compress
         int k = 20;
-        Matrix r = compress(rImgMat, k);
-        Matrix g = compress(gImgMat, k);
-        Matrix b = compress(bImgMat, k);
+        double[][] r = compress(rImgMat, k);
+        double[][] g = compress(gImgMat, k);
+        double[][] b = compress(bImgMat, k);
+        
+        // create output image
+        BufferedImage finalImg = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        
+        // create image bit-by-bit
+        for (int i = 0; i < width; i++)
+        	for (int j = 0; j < height; j++)
+        		finalImg.setRGB(i, j, 0xFF000000 + (int)(r[i][j] + g[i][j] + b[i][j]));
         
         
+        File outFile = new File("./resources/outFile.jpg");
+        try {
+			boolean T = ImageIO.write(finalImg, "jpg", outFile);
+			System.out.println(T);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
         
         // debug printing
         //printImg(imgMatrix);
 	}
 	
-	public static Matrix compress(double[][] m, int k) {
+	public static double[][] compress(double[][] m, int k) {
 		// create matrix and get SVD
 		Matrix a = new Matrix(m);
 		SingularValueDecomposition svd = a.svd();
@@ -99,9 +118,9 @@ public class SVDComp {
 		Matrix vT = new Matrix(vTNew);
 		
 		// recontstruct matrix and return
-		Matrix newImg = s.times(u).times(vT);
+		Matrix newImg = u.times(s).times(vT);
 		
-		return newImg;
+		return newImg.getArray();
 	}
 	
 	public static void printImg(int[][] img) {
