@@ -26,7 +26,7 @@ public class SVDComp {
         // read image
         try {
             f = new File(
-                "./resources/dog.jpg");
+                "./resources/cement.png");
             img = ImageIO.read(f);
         }
         catch (IOException e) {
@@ -57,7 +57,7 @@ public class SVDComp {
         	}
         
         // compress
-        int k = 100;
+        int k = 10;
         double[][] r = compress(rImgMat, k);
         double[][] g = compress(gImgMat, k);
         double[][] b = compress(bImgMat, k);
@@ -72,10 +72,10 @@ public class SVDComp {
         	}
         }
         
-        
-        File outFile = new File("./resources/test6.jpg");
+        // print image
+        File outFile = new File("./resources/cement02.png");
         try {
-			boolean T = ImageIO.write(finalImg, "jpg", outFile);
+			boolean T = ImageIO.write(finalImg, "png", outFile);
 			System.out.println(T);
 		} catch (IOException e) {
 			e.printStackTrace();
