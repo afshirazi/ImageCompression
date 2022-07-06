@@ -22,7 +22,7 @@ public class SVDComp {
         // read image
         try {
             f = new File(
-                "C:/Users/hp/Desktop/Image Processing in Java/gfg-logo.png");
+                "./resources/dog.jpg");
             img = ImageIO.read(f);
         }
         catch (IOException e) {
@@ -37,6 +37,19 @@ public class SVDComp {
         for (int i = 0; i < img.getWidth(); i++) 
         	for (int j = 0; j < img.getHeight(); j++)
         		imgMatrix[i][j] = img.getRGB(i, j);
+        
+        // debug printing
+        printImg(imgMatrix);
+	}
+	
+	public static void printImg(int[][] img) {
+		for (int i = 0; i < img.length; i++) {
+        	for (int j = 0; j < img[0].length; j++)
+        		System.out.printf("%x\t", img[i][j] & 0x00FFFFFF /*only care about RGB values, not alpha*/);
+        	System.out.println();
+		}
+		
+	System.out.printf("Image width = %d\t Image height= %d\n", img.length, img[0].length);
 	}
 
 }
